@@ -1,2 +1,2 @@
-# AirflowPipeline
-General repository for the USGS Airflow Processing Pipeline
+# AirFlowPipeline
+General repository for the USGS AirFlow Processing Pipeline
