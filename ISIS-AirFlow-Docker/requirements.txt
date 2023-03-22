@@ -1,3 +1,0 @@
-apache-airflow
-setuptools<58
-pysis
