@@ -38,22 +38,31 @@ Outputs     : parsed_data (list)
 def parse_data(data):
     parsed_data = []
 
+    # For recipe in file
     for key in data:
         if( isinstance(data[key], dict) ):
             recipeName = key
             recipe = []
             recipe.append(recipeName)
 
+            # For module in recipe
             for keytwo in data[ recipeName ]:
                 if( isinstance(data[recipeName][keytwo], dict) ):
+
+                    # For module name in module
                     for keythree in data[recipeName][keytwo]:
                         recipe.append(getattr(ISIS_DAGS, keythree.replace('.', '_') ).value)
+
+                        # For variable in module name
                         for keyfour in data[recipeName][keytwo][keythree]:
-                            print(keyfour)
+                            value =  data[recipeName][keytwo][keythree][keyfour]
+                            # recipe.append( value )
 
             parsed_data.append( recipe )
+            print(recipe)
 
-    return parsed_data
+    # Returns a list of lists, where each sublist is a complete recipe 
+    return( parsed_data )
 
 data = read_file('example_recipes.json')
-print( parse_data(data) )
+parse_data(data)

@@ -4,13 +4,13 @@
 from enum import Enum
 
 # Declare variables ============================================================
-isis = ''
-
+MOD_PREFIX = 'isis_'
 
 # Declare functions ============================================================
 class ISIS_DAGS(Enum):
     def __str__(self):
         return str(self.value)
+    
     isis_mroctx2isis = 1
     isis_catlab = 2
     isis_spiceinit = 3
