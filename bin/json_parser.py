@@ -3,6 +3,7 @@
 # Import dependencies ==========================================================
 import json
 from ISIS3_Enums import ISIS_DAGS
+import ISIS3_Mods
 
 # Declare variables ============================================================
 JSON_DATA = ''
@@ -51,17 +52,19 @@ def parse_data(data):
 
                     # For module name in module
                     for keythree in data[recipeName][keytwo]:
-                        recipe.append(getattr(ISIS_DAGS, keythree.replace('.', '_') ).value)
+                        module = getattr(ISIS_DAGS, keythree.replace('.', '_') ).value
+                        new_dag = getattr(ISIS3_Mods, keythree.replace('.','_'))
 
                         # For variable in module name
                         for keyfour in data[recipeName][keytwo][keythree]:
                             value =  data[recipeName][keytwo][keythree][keyfour]
-                            # recipe.append( value )
+                            setattr(new_dag, keyfour, value)
+
+                        recipe.append( (module, new_dag) )
 
             parsed_data.append( recipe )
-            print(recipe)
 
-    # Returns a list of lists, where each sublist is a complete recipe 
+    # Returns a list of lists, where each sublist is a complete recipe
     return( parsed_data )
 
 data = read_file('example_recipes.json')
