@@ -67,5 +67,7 @@ def parse_data(data):
     # Returns a list of lists, where each sublist is a complete recipe
     return( parsed_data )
 
-data = read_file('example_recipes.json')
-parse_data(data)
+if __name__ == "__main__":
+    data = read_file('example_recipes.json')
+    _ = parse_data(data)
+    print(_)
