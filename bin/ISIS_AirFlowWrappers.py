@@ -1,5 +1,8 @@
 from airflow.decorators import task
-from kalasiris import cam2map, mroctx2isis, spiceinit, ctxcal, ctxevenodd
+from kalasiris import (cam2map, 
+    mroctx2isis, spiceinit, ctxcal, ctxevenodd, moc2isis, 
+    cube_rename, moccal, mocnoise50, mocevenodd)
+
 
 #global vars
 si_from = ''
