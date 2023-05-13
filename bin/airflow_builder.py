@@ -4,6 +4,7 @@ from json_parser import parse_data, read_file
 import json, ISIS3_Mods
 from datetime import datetime
 from ISIS3_Enums import ISIS_DAGS
+import ISIS_AirFlowWrappers as wrap
 
 def main():
     data = read_file("/home/isaiahr/src/AirFlowPipeline/bin/example_recipes.json")
@@ -21,20 +22,6 @@ def main():
             
 
             for (id, mod) in node:
-                # if len(set_order) == 0:
-                #     @task(task_id=("task"+str(id)))
-                #     def report_init(*kwargs):
-                #         print("did it")
-                #     x = report_init()
-                #     set_order.append(x)
-                # else:
-                #     @task(task_id=("task"+str(id)))
-                #     def report_init(*kwargs):
-                #         print("did it")
-                #     x = report_init(set_order[len(set_order) - 1])
-                #     set_order.append(x)
-
-                enum = ISIS_DAGS
 
                 isis_mroctx2isis = 1
                 isis_catlab = 2
@@ -47,69 +34,94 @@ def main():
                 isis_cam2map = 9
                 gdal_translate = 10
 
+
                 def mon(func):
                     if len(set_order) == 0:
                         x = func()
                         set_order.append(x)
                     else:
-                        x = func(set_order[len(set_order) - 1])
+                        x = func(ds=set_order[len(set_order) - 1])
                         set_order.append(x)
 
                 if int(id) == isis_mroctx2isis: #mr
-                    @task(task_id="mroctx2isis")
-                    def report_init(*args):
-                        print("did it")
-                    mon(report_init)
+                    wrap.mr_from = mod.from_
+                    wrap.mr_to = mod.to
+                    mon(wrap.runmroctx2isis)
 
                 elif int(id) == isis_spiceinit:
-                    @task(task_id="spiceinit")
-                    def spice_init(*args):
-                        print("complete")
-                    mon(spice_init)
+                    wrap.si_from = mod.from_
+                    mon(wrap.runspiceinit)
+
                 elif int(id) == isis_ctxcal:
-                    @task(task_id="ctxcal")
-                    def ctxcal(*args):
-                        print("did it")
-                    mon(ctxcal)
+                    wrap.ctxcal_from = mod.from_
+                    wrap.ctxcal_to = mod.to
+                    mon(wrap.runctxcal)
+
                 elif int(id) == isis_ctxevenodd:
-                    @task(task_id="ctxevenodd")
-                    def ctxcal(*args):
-                        print("did it")
-                    mon(ctxcal)
+                    wrap.ctxevenodd_from = mod.from_
+                    wrap.ctxevenodd_to = mod.to
+                    mon(wrap.runctxevenodd)
+                    
                 elif int(id) == isis_cam2map:
-                    @task(task_id="cam2map")
-                    def ctxcal(*args):
-                        print("did it")
-                    mon(ctxcal)
+                    wrap.cam_from = mod.from_
+                    wrap.cam_to = mod.to
+                    wrap.cam_map = mod.map
+                    wrap.matchmap = mod.matchmap
+                    wrap.pixres = mod.pixres
+                    wrap.defaultrange = mod.defaultrange
+
+                    mon(wrap.runcam2map)
+
                 elif int(id) == isis_catlab:
-                    @task(task_id="catlab")
-                    def ctxcal(*args):
-                        print("did it")
-                    mon(ctxcal)
-                elif int(id) == isis_cam2map:
-                    @task(task_id="cam2map")
-                    def ctxcal(*args):
-                        print("did it")
-                    mon(ctxcal)
+                    wrap.catlab_from = mod.from_
+                    wrap.catlab_to = mod.to
+                    
+                    mon(wrap.runcatlab)
+
                 elif int(id) == isis_footprintinit:
-                    @task(task_id="footprintinit")
-                    def footprintinit(*args):
-                        print("did it")
-                    mon(footprintinit)
+                    wrap.fp_from = mod.from_
+                    wrap.fp_increase = mod.increaseprecision
+                    wrap.fp_inc = mod.inctype
+                    wrap.fp_vtx = mod.numvertices
+                    wrap.fp_em = mod.maxemission
+                    wrap.fp_incedidence = mod.maxincidence
+
+                    mon(wrap.runfootprintinit)
+
                 elif int(id) == isis_caminfo:
-                    @task(task_id="caminfo")
-                    def caminfo(*args):
-                        print("did it")
-                    mon(caminfo)
+                    wrap.ci_from = mod.from_
+                    wrap.ci_to = mod.to
+                    wrap.ci_geo = mod.geometry
+                    wrap.ci_isislbl = mod.isislabel
+                    wrap.ci_originlbl = mod.originallabel
+                    wrap.ci_stats = mod.statistics
+                    wrap.ci_camstats = mod.camstats
+                    wrap.ci_linc = mod.linc
+                    wrap.ci_sinc = mod.sinc
+                    wrap.ci_polygon = mod.polygon
+                    wrap.ci_inctype = mod.inctype
+                    wrap.ci_increase = mod.increaseprecision
+                    wrap.ci_vtx = mod.numvertices
+                    wrap.ci_maxemission = mod.maxemission
+                    wrap.ci_maxincidence = mod.maxincidence
+                    wrap.ci_spice = mod.spice
+
+                    mon(wrap.runcaminfo)
+                    
                 elif int(id) == cube_rename:
-                    @task(task_id="cube_rename")
-                    def cuberename(*args):
-                        print("did it")
-                    mon(cuberename)
+                    wrap.rename_src = mod.src
+                    wrap.rename_dest = mod.dest
+                    mon(wrap.runcube_rename)
+
                 elif int(id) == gdal_translate:
-                    @task(task_id="gdal_translate")
-                    def gdaltranslate(*args):
-                        print("did it")
-                    mon(gdaltranslate)
+                    wrap.gd_outputType = mod.outputType
+                    wrap.gd_format = mod.format
+                    wrap.gd_scaleParams = mod.scaleParams
+                    wrap.gd_width = mod.width
+                    wrap.gd_height = mod.height
+                    wrap.gd_src = mod.src
+                    wrap.gd_dest = mod.dest
+
+                    mon(wrap.rungdal_translate)
 
 main()

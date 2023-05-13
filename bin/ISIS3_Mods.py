@@ -77,7 +77,7 @@ class cube_rename():
 class isis_cam2map():
     def __init__():
         self.MODULE_NAME = 'isis.cam2map'
-        self.from_ = ''
+        self.source = ''
         self.to = ''
         self.map = ''
         self.matchmap = ''
